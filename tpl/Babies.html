@@ -1,0 +1,166 @@
+
+<style>
+#baklava {
+  margin-top:5px;
+}
+.error{
+  color:red;
+}
+</style>
+<button type="button" class="btn btn-primary" data-target="#babyModal" onclick="open_modal_baby()">
+  New Baby
+</button>
+<table class="table">
+   <thead>
+     <tr>
+       <th scope="col">ID</th>
+       <th scope="col">Mother</th>
+       <th scope="col">Gender</th>
+       <th scope="col">Date</th>
+       <th scope="col">Time</th>
+       <th scope="col">Height</th>
+       <th scope="col">Weight</th>
+       <th scope="col">Delete</th>
+     </tr>
+   </thead>
+   <tbody id="table_content">
+   </tbody>
+</table>
+<div class="modal fade" id="babyModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="baby_form" style="background-color:#00FFFF">
+        <div class="modal-body">
+            <div>
+              <label for="mother">Mother:</label>
+              <input type="text" id="mother" name="mother" class="form-control"></input>
+            </div>
+            <div id="baklava">
+              <label for="gender">Gender:</label>
+                <select type="input" id="gender" name="gender">
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+            </div>
+            <div>
+              <label for="date1">Date:</label>
+              <input type="date" id="date1" name="date1" class="form-control"></input>
+            </div>
+            <div>
+              <label for="time1">Time:</label>
+              <input type="text" id="time1" name="time1" class="form-control"></input>
+            </div>
+            <div>
+              <label for="height">Height:</label>
+              <input type="text" id="height" name="height" class="form-control"></input>
+            </div>
+            <div>
+              <label for="weight">Weight:</label>
+              <input type="text" id="weight" name="weight" class="form-control"></input>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary"style="background-color:orange;color:black;">Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"style="background-color:red;color:black;">Cancel</button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  get_babies();
+  function get_babies(){
+    $.get( "rest/v1/babies", function( data ) {
+      var html = '';
+      for(var i = 0; i < data.length; i++){
+        html += '<tr> <td>' + data[i].id + '</td>';
+        html += '<td>' + data[i].mother + '</td>';
+        html += '<td>' + data[i].gender + '</td>';
+        html += '<td>' + data[i].date1 + '</td>';
+        html += '<td>' + data[i].time1 + '</td>';
+        html += '<td>' + data[i].height + '</td>';
+        html += '<td>' + data[i].weight + '</td>';
+        html += '<td><button type="button" class="btn btn-danger" onclick="delete_baby('+data[i].id+');">Delete</button></td> </tr>';
+      }
+      $("#table_content").html(html);
+    });
+  }
+
+  function delete_baby(id){
+    $.ajax({
+      url: 'rest/babies/'+id,
+      method: 'DELETE',
+      success: function(result) {
+          toastr.success('Deleted');
+          get_babies();
+          get_male_count();
+          get_female_count();
+      },
+      error: function(){
+        toastr.success('Not deleted');
+      }
+    });
+  }
+
+  function open_modal_baby(){
+    $("#babyModal").modal("toggle");
+  }
+  $("#baby_form").validate({
+    rules: {
+      mother: {
+        required: true,
+        minlength: 3
+      },
+      date1: {
+        required: true
+      },
+      gender: {
+        required: true
+      },
+      time1: {
+        required: true
+      },
+      height: {
+        required: true
+      },
+      weight: {
+        required: true
+      }
+    },
+    messages: {
+      mother: {
+        required: "Please enter mother name",
+        ninlength: "Please enter at least 3 characters"
+      },
+      date1: {
+        required: "Please enter date"
+      },
+      gender: {
+        required: "Please enter gender"
+      },
+      time1: {
+        required: "Please enter time"
+      },
+      height: {
+        required: "Please enter height"
+      },
+      weight: {
+        required: "Please enter weight"
+      }
+    },
+    submitHandler: function(form, validator) {
+     $.post('rest/babies', $("#baby_form").serialize()).done(function(){
+       toastr.success('Baby added'); //display success message
+       $('#babyModal').modal('toggle'); //close modal
+       get_babies();
+       get_male_count();
+       get_female_count();
+     }).fail(function(){
+        toastr.error('Baby not added');   //read students
+});
+}
+
+});
+</script>

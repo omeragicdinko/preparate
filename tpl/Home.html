@@ -1,0 +1,45 @@
+<style>
+  .card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  top-margin: 10px;
+  display:inline-block;
+}
+
+</style>
+
+
+
+
+
+<html>
+<body>
+  <div class="row">
+    <div id="demo2" class="col-sm-4" style="border:solid 5px; margin: 0px 10px 0px 10px; padding: 100px 10px 100px 10px;"></div>
+    <div id="demo" class="col-sm-4" style="border:solid 5px; margin: 0px 10px 0px 10px; padding: 100px 10px 100px 10px;"></div>
+</div>
+
+</body>
+</html>
+
+
+
+
+<script>
+get_male_count();
+get_female_count();
+  function get_male_count(){
+    $.get( "rest/v1/baby_count", function( data ) {
+      var  r = data[0].Male;
+      document.getElementById("demo").innerHTML = "Male: "+r;
+
+    });
+  }
+  function get_female_count(){
+    $.get( "rest/v1/baby_count", function( data ) {
+      var  t = data[0].Female;
+      document.getElementById("demo2").innerHTML = "Female: "+t;
+
+    });
+  }
+</script>
